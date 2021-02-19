@@ -34,6 +34,12 @@ class anaxcelhandler(QtWidgets.QMainWindow, UI_lan.Ui_MainWindow):
         self.setupUi(self)
         self.setWindowIcon(QtGui.QIcon(self.bundle_dir + '/icons/icon.png'))
         self.setStyleSheet(open("Dark/darkstyle.qss", "r").read())
+
+        # self.use_palette()
+        # self.show()
+
+
+
         self.listWidget.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
         self.pushButtonbrowse.clicked.connect(self.openFileNamesDialog)
         self.pushButtonclear.clicked.connect(self.clearwidget)
@@ -50,6 +56,12 @@ class anaxcelhandler(QtWidgets.QMainWindow, UI_lan.Ui_MainWindow):
         #==========log=====
         sys.stdout = Stream(newText=self.onUpdateText)
         #==========log=====
+
+    def use_palette(self):
+        self.setWindowTitle("设置背景图片")
+        window_pale = QtGui.QPalette()
+        window_pale.setBrush(self.backgroundRole(),   QtGui.QBrush(QtGui.QPixmap(self.bundle_dir + '/icons/bg.jpeg')))
+        self.setPalette(window_pale)
     def onUpdateText(self, text):
         """Write console output to text widget."""
         cursor = self.textBrowserlog.textCursor()

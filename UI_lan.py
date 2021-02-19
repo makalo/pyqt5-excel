@@ -120,6 +120,10 @@ class Ui_MainWindow(object):
         self.comboBoxfiletypeY.setCurrentIndex(-1)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
+        MainWindow.setWindowOpacity(0.9)  # 设置窗口透明度
+        MainWindow.setAttribute(QtCore.Qt.WA_TranslucentBackground)  # 设置窗口背景透明
+
+
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
