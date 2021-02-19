@@ -42,8 +42,9 @@ def split_excel(path,idx,signal = None):
                 for j in range(1,num_column+1):
                     ws_tmp.row_dimensions[i].height = ws.row_dimensions[idx].height
                     ws_tmp.column_dimensions[get_column_letter(j)].width = ws.column_dimensions[get_column_letter(j)].width
-                    cell_tmp = ws_tmp.cell(row=i, column=j)
+                    
                     cell = ws.cell(row=idx, column=j)
+                    cell_tmp = ws_tmp.cell(row=i, column=j,value = cell.value)
                     assign_value(cell_tmp,cell)
             # set_style(ws_tmp)
         wbs_split.append(wb_tmp)
@@ -57,7 +58,7 @@ def split_excel(path,idx,signal = None):
 
 if __name__ == "__main__":
     idx = [2,2]
-    wbs_split,names_split = split_excel('test2.xlsx',idx)
+    wbs_split,names_split = split_excel('test.xlsx',idx)
     root = './debug'
     if not os.path.exists(root):
         os.makedirs(root)

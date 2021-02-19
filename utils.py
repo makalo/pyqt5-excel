@@ -59,7 +59,6 @@ def set_style(ws):
             cell.alignment = align
             cell.font = font_18
 def assign_value(target_cell,source_cell):
-    target_cell.value = source_cell.value
     target_cell.fill = copy.copy(source_cell.fill)
     if source_cell.has_style:
         target_cell._style = copy.copy(source_cell._style)
