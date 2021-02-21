@@ -40,7 +40,8 @@ pyinstaller -F -w run.py
 2. 会生成setup.exe 双击就可以安装了
 
 ## 展示效果
-![image](./show/show.mp4.gif)
+<div align=center><img width="440" height="440" src="https://github.com/makalo/pyqt5-excel/blob/windows/show/show.mp4.gif"/></div>
+
 
 
 
