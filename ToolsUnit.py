@@ -56,15 +56,15 @@ def split_excel(path,idx,signal = None):
     return wbs_split,names_split
 
 
-if __name__ == "__main__":
-    idx = [2,2]
-    wbs_split,names_split = split_excel('test.xlsx',idx)
-    root = './debug'
-    if not os.path.exists(root):
-        os.makedirs(root)
-    for wb,name in zip(wbs_split,names_split):
-        path = os.path.join(root,name+'.xlsx')
-        wb.save(path)
+# if __name__ == "__main__":
+#     idx = [2,2]
+#     wbs_split,names_split = split_excel('test.xlsx',idx)
+#     root = './debug'
+#     if not os.path.exists(root):
+#         os.makedirs(root)
+#     for wb,name in zip(wbs_split,names_split):
+#         path = os.path.join(root,name+'.xlsx')
+#         wb.save(path)
 
 
 

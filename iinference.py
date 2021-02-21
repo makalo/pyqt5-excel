@@ -125,23 +125,24 @@ class anaxcelhandler(QtWidgets.QMainWindow, UI_lan.Ui_MainWindow):
         items = self.listWidget.selectedItems()
         if len(items) == 0:
             QMessageBox.about(self, "关于对话框", '请先选择文件')
-        xlsfiles = []
-        for i in list(items):
-            xlsfiles.append(str(i.text()))
+        else:
+            xlsfiles = []
+            for i in list(items):
+                xlsfiles.append(str(i.text()))
 
-        wb = load_workbook(filename=xlsfiles[0])
-        sheet_names = wb.sheetnames
-        ws = wb[sheet_names[0]]
-        num_row = ws.max_row
-        num_column = ws.max_column
-        self.tableWidget.setColumnCount(num_column)
-        self.tableWidget.setRowCount(num_row)
-        for i in range(1,num_row+1):
-            for j in range(1,num_column+1):
-                v = ws.cell(row=i, column=j).value
-                self.tableWidget.setItem(i-1, j-1, QTableWidgetItem(str(v)))
-        self.tableWidget.resizeColumnsToContents()
-        self.tableWidget.resizeRowsToContents()
+            wb = load_workbook(filename=xlsfiles[0])
+            sheet_names = wb.sheetnames
+            ws = wb[sheet_names[0]]
+            num_row = ws.max_row
+            num_column = ws.max_column
+            self.tableWidget.setColumnCount(num_column)
+            self.tableWidget.setRowCount(num_row)
+            for i in range(1,num_row+1):
+                for j in range(1,num_column+1):
+                    v = ws.cell(row=i, column=j).value
+                    self.tableWidget.setItem(i-1, j-1, QTableWidgetItem(str(v)))
+            self.tableWidget.resizeColumnsToContents()
+            self.tableWidget.resizeRowsToContents()
 
     def LoadProcess(self):
         if self.comboBoxfiletype.currentIndex() == 1:  # xls
@@ -191,12 +192,9 @@ class anaxcelhandler(QtWidgets.QMainWindow, UI_lan.Ui_MainWindow):
         self.lcdNumber.display(value)
 
 
-def main():
-    app = QtWidgets.QApplication(sys.argv)
-    window = anaxcelhandler()
-    window.show()
-    sys.exit(app.exec_())
 
+app = QtWidgets.QApplication(sys.argv)
+window = anaxcelhandler()
+window.show()
+sys.exit(app.exec_())
 
-if __name__ == '__main__':
-    main()
