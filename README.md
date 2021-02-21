@@ -40,6 +40,7 @@ pyinstaller -F -w run.py
 2. 会生成setup.exe 双击就可以安装了
 
 ## 展示效果
+![image](./show/show.mp4.gif)
 
 
 
