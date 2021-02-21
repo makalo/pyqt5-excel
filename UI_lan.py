@@ -114,7 +114,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "Powered by makalo"))
         self.groupBox_3.setTitle(_translate("MainWindow", "兰神专属"))
         self.groupBox_4.setTitle(_translate("MainWindow", "显示区"))
         self.groupBox.setTitle(_translate("MainWindow", "功能区"))
