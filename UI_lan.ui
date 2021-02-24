@@ -24,7 +24,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>1</number>
     </property>
     <widget class="QWidget" name="tab">
      <attribute name="title">
@@ -272,15 +272,179 @@
      <attribute name="title">
       <string>Tab 2</string>
      </attribute>
-     <widget class="QTableWidget" name="tableWidget">
+     <widget class="QGroupBox" name="groupBox_2">
       <property name="geometry">
        <rect>
-        <x>5</x>
-        <y>11</y>
-        <width>1071</width>
-        <height>681</height>
+        <x>0</x>
+        <y>0</y>
+        <width>1091</width>
+        <height>80</height>
        </rect>
       </property>
+      <property name="title">
+       <string>参数配置</string>
+      </property>
+      <widget class="QPushButton" name="pushButton_confirm_idx">
+       <property name="geometry">
+        <rect>
+         <x>950</x>
+         <y>50</y>
+         <width>113</width>
+         <height>32</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>confirm</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="pushButton_clear_idx">
+       <property name="geometry">
+        <rect>
+         <x>950</x>
+         <y>20</y>
+         <width>113</width>
+         <height>32</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>clear</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_ws">
+       <property name="geometry">
+        <rect>
+         <x>40</x>
+         <y>50</y>
+         <width>60</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>sheets</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_wb">
+       <property name="geometry">
+        <rect>
+         <x>40</x>
+         <y>20</y>
+         <width>81</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>workbookes</string>
+       </property>
+      </widget>
+      <widget class="QComboBox" name="comboBox_wb">
+       <property name="geometry">
+        <rect>
+         <x>120</x>
+         <y>20</y>
+         <width>581</width>
+         <height>26</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QComboBox" name="comboBox_ws">
+       <property name="geometry">
+        <rect>
+         <x>120</x>
+         <y>50</y>
+         <width>581</width>
+         <height>26</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_keyidx">
+       <property name="geometry">
+        <rect>
+         <x>730</x>
+         <y>20</y>
+         <width>51</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>keyidx</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_range">
+       <property name="geometry">
+        <rect>
+         <x>730</x>
+         <y>50</y>
+         <width>51</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>range</string>
+       </property>
+      </widget>
+      <widget class="QComboBox" name="comboBox_x">
+       <property name="geometry">
+        <rect>
+         <x>790</x>
+         <y>20</y>
+         <width>51</width>
+         <height>26</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QComboBox" name="comboBox_y">
+       <property name="geometry">
+        <rect>
+         <x>840</x>
+         <y>20</y>
+         <width>91</width>
+         <height>26</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QComboBox" name="comboBox_r1">
+       <property name="geometry">
+        <rect>
+         <x>790</x>
+         <y>50</y>
+         <width>51</width>
+         <height>26</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QComboBox" name="comboBox_r2">
+       <property name="geometry">
+        <rect>
+         <x>840</x>
+         <y>50</y>
+         <width>91</width>
+         <height>26</height>
+        </rect>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QGroupBox" name="groupBox_5">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>79</y>
+        <width>1091</width>
+        <height>611</height>
+       </rect>
+      </property>
+      <property name="title">
+       <string>excel显示</string>
+      </property>
+      <widget class="QTableWidget" name="tableWidget">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>30</y>
+         <width>1091</width>
+         <height>571</height>
+        </rect>
+       </property>
+      </widget>
      </widget>
     </widget>
    </widget>

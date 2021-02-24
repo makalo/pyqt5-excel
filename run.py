@@ -11,8 +11,7 @@ from PyQt5.QtGui import QTextCursor
 import UI_lan
 from ToolsPackage import splitThread
 from openpyxl import load_workbook
-
-
+from utils import get_column_letter,assign_style_qt,get_merge_cell_list
 
 class Stream(QObject):
     """Redirects console output to text widget."""
@@ -35,11 +34,6 @@ class anaxcelhandler(QtWidgets.QMainWindow, UI_lan.Ui_MainWindow):
         self.setWindowIcon(QtGui.QIcon(self.bundle_dir + '/icons/icon.png'))
         self.setStyleSheet(open("Dark/darkstyle.qss", "r").read())
 
-        # self.use_palette()
-        # self.show()
-
-
-
         self.listWidget.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
         self.pushButtonbrowse.clicked.connect(self.openFileNamesDialog)
         self.pushButtonclear.clicked.connect(self.clearwidget)
@@ -56,6 +50,16 @@ class anaxcelhandler(QtWidgets.QMainWindow, UI_lan.Ui_MainWindow):
         #==========log=====
         sys.stdout = Stream(newText=self.onUpdateText)
         #==========log=====
+
+        #==========show====
+        self.flag_confirm = False
+        self.activate_file = [None,None]
+        self.comboBox_wb.activated.connect(self.wbActivated)
+        self.comboBox_ws.activated.connect(self.wsActivated)
+        self.tableWidget.itemClicked.connect(self.handleItemClick)
+        self.pushButton_clear_idx.clicked.connect(self.clear_idx)
+        self.pushButton_confirm_idx.clicked.connect(self.confirm_idx)
+        #==========show====
 
     def use_palette(self):
         self.setWindowTitle("设置背景图片")
@@ -91,110 +95,195 @@ class anaxcelhandler(QtWidgets.QMainWindow, UI_lan.Ui_MainWindow):
     def clearwidget(self):
         self.listWidget.clear()
         self.tableWidget.clear()
+        self.tableWidget.setColumnCount(0)
+        self.tableWidget.setRowCount(0)
+        self.comboBox_x.clear()
+        self.comboBox_y.clear()
+        self.comboBox_wb.clear()
+        self.comboBox_ws.clear()
+        self.comboBox_r1.clear()
+        self.comboBox_r2.clear()
+    def clearcontext_all(self):
+        self.tableWidget.clear()
+        self.tableWidget.setColumnCount(0)
+        self.tableWidget.setRowCount(0)
+        self.comboBox_x.clear()
+        self.comboBox_y.clear()
+        self.comboBox_wb.clear()
+        self.comboBox_ws.clear()
+        self.comboBox_r1.clear()
+        self.comboBox_r2.clear()
+    def clearcontext_show(self):
+        self.tableWidget.clear()
+        self.tableWidget.setColumnCount(0)
+        self.tableWidget.setRowCount(0)
+    def clear_idx(self):
+        self.comboBox_x.clear()
+        self.comboBox_y.clear()
+        self.comboBox_r1.clear()
+        self.comboBox_r2.clear()
+    def confirm_idx(self):
+
+        x = self.comboBox_x.itemText(self.comboBox_x.currentIndex())
+        y = self.comboBox_y.itemText(self.comboBox_y.currentIndex())
+
+        r1 = self.comboBox_r1.itemText(self.comboBox_r1.currentIndex())
+        r2 = self.comboBox_r2.itemText(self.comboBox_r2.currentIndex())
+
+        wb = self.comboBox_wb.itemText(self.comboBox_wb.currentIndex())
+        ws = self.comboBox_ws.itemText(self.comboBox_ws.currentIndex())
+
+        if wb == '' or ws == '':
+            QMessageBox.about(self, "hi,兰神", '先load文件')
+        else:
+            key_idx = [x,y]
+            rg = [r1,r2]
+            self.infos[wb]['sheet_names'][ws] = [key_idx,rg]
+            self.flag_confirm = True
+
 
     def selectall(self):
         self.listWidget.selectAll()
         items = self.listWidget.selectedItems()
         if len(items) == 0:
-            QMessageBox.about(self, "关于对话框", '请先加载文件')
-
-    def xlsProcess(self):
-        self.tableWidget.clear()
-        items = self.listWidget.selectedItems()
-        if len(items) == 0:
-            QMessageBox.about(self, "关于对话框", '请先选择文件')
-        xlsfiles = []
-        for i in list(items):
-            xlsfiles.append(i.text())
-        wkbk = xlwt.Workbook()
-        outsheet = wkbk.add_sheet('Sheet1')
-        outrow_idx = 0
-        for f in xlsfiles:
-            print('正在加载 {}'.format(os.path.split(f)[-1]))
-            insheet = xlrd.open_workbook(f).sheets()[0]
-            for row_idx in range(insheet.nrows):
-                for col_idx in range(insheet.ncols):
-                    outsheet.write(outrow_idx, col_idx, insheet.cell_value(row_idx, col_idx))
-                outrow_idx += 1
-        wkbk.save(r'combined.xls')
-        # use on_demand=True to avoid loading worksheet data into memory
-        book = xlrd.open_workbook("combined.xls", on_demand=True)
-        sheet = book.sheet_by_index(0)
-        num_rows = sheet.nrows
-        num_col = sheet.ncols
-        self.tableWidget.setRowCount(num_rows)
-        self.tableWidget.setColumnCount(num_col)
-        for col in range(num_col):
-            for row in range(num_rows):
-                cell = sheet.cell(row, col)
-                if (not cell.value == "") and (not cell.value == " "):
-                    self.tableWidget.setItem(row, col, QTableWidgetItem(str(cell.value)))
-        self.tableWidget.resizeColumnsToContents()
-        self.tableWidget.resizeRowsToContents()
-
-    def xlsxprocess(self):
-        self.tableWidget.clear()
-        items = self.listWidget.selectedItems()
-        if len(items) == 0:
-            QMessageBox.about(self, "关于对话框", '请先选择文件')
-        else:
-            xlsfiles = []
-            for i in list(items):
-                xlsfiles.append(str(i.text()))
-
-            wb = load_workbook(filename=xlsfiles[0])
-            sheet_names = wb.sheetnames
-            ws = wb[sheet_names[0]]
-            num_row = ws.max_row
-            num_column = ws.max_column
-            self.tableWidget.setColumnCount(num_column)
-            self.tableWidget.setRowCount(num_row)
-            for i in range(1,num_row+1):
-                for j in range(1,num_column+1):
-                    v = ws.cell(row=i, column=j).value
-                    self.tableWidget.setItem(i-1, j-1, QTableWidgetItem(str(v)))
-            self.tableWidget.resizeColumnsToContents()
-            self.tableWidget.resizeRowsToContents()
+            QMessageBox.about(self, "hi,兰神", '请先加载文件')
 
     def LoadProcess(self):
+        self.clearcontext_all()
         if self.comboBoxfiletype.currentIndex() == 1:  # xls
-            QMessageBox.about(self, "关于对话框", '不支持 xls 格式文件')
-            # self.xlsProcess()
-            # for colindex in range(self.tableWidget.columnCount()):
-            #     self.comboBoxfiletypeX.addItem(str(colindex))
-            #     self.comboBoxfiletypeY.addItem(str(colindex))
-
+            QMessageBox.about(self, "hi,兰神", '不支持 xls 格式文件')
         elif self.comboBoxfiletype.currentIndex() == 0:  # xlsx
-            self.xlsxprocess()
-            for colindex in range(self.tableWidget.columnCount()):
-                self.comboBoxfiletypeX.addItem(str(colindex))
-                self.comboBoxfiletypeY.addItem(str(colindex))
+            items = self.listWidget.selectedItems()
+            if len(items) == 0:
+                QMessageBox.about(self, "hi,兰神", '请先选择文件')
+            else:
+                self.infos = {}
+                for i in list(items):
+                    file_path = str(i.text())
+                    wb = load_workbook(filename=file_path)
+                    name = os.path.split(file_path)[-1]
+
+                    sheet_names = wb.sheetnames
+
+                    sheets_dict = {}
+                    for s in sheet_names:
+                        sheets_dict[s] = []
+
+                    self.infos[name] = {'path':file_path,'sheet_names':sheets_dict}
+                    wb.close()
+
+                for k in self.infos.keys():
+                    self.comboBox_wb.addItem(k)
+                k = self.comboBox_wb.itemText(0)
+                sheets = list(self.infos[k]['sheet_names'].keys())
+                for s in sheets:
+                    self.comboBox_ws.addItem(s)
+                self.activate_file[0] = self.infos[k]['path']
+                self.activate_file[1] = list(self.infos[k]['sheet_names'].keys())[0]
+
+                self.show_excel()
         print('可以预览文件')
+    def wbActivated(self,index):
+        self.clearcontext_show()
+        wb_k = self.comboBox_wb.itemText(index)
+        sheets = list(self.infos[wb_k]['sheet_names'].keys())
+        self.comboBox_ws.clear()
+        for s in sheets:
+            self.comboBox_ws.addItem(s)
+        self.activate_file[0] = self.infos[wb_k]['path']
+        self.activate_file[1] = list(self.infos[wb_k]['sheet_names'].keys())[0]
+        self.show_excel()
+
+
+    def wsActivated(self,index):
+        ws_k = self.comboBox_ws.itemText(index)
+        self.activate_file[1] = ws_k
+        self.show_excel()
+
+    def handleItemClick(self,item):
+        cont = item.text()
+        self.comboBox_x.clear()
+        self.comboBox_y.clear()
+        self.comboBox_r1.clear()
+        row = item.row()
+        #=======对合并的单元格取idx
+        for p in self.merge_position:
+            if row == p[0]:
+                row = row + (p[1]-p[0])
+                break
+        #=======对合并的单元格取idx
+        self.comboBox_x.addItem(str(row+1))
+        self.comboBox_y.addItem(str(item.column()+1))
+
+        self.comboBox_r1.addItem(str(row+2))
+
+
+    def show_excel(self):
+        self.merge_position = []
+        path = self.activate_file[0]
+        sheetname = self.activate_file[1]
+        wb = load_workbook(filename=path)
+        ws = wb[sheetname]
+        num_row = ws.max_row
+        num_column = ws.max_column
+        self.tableWidget.setColumnCount(num_column)
+        self.tableWidget.setRowCount(num_row)
+
+        #======合并单元格=======
+        merge_idx = ws.merged_cells
+        merge_idx = get_merge_cell_list(merge_idx)
+
+        for i in range(len(merge_idx)):
+            m_idx = merge_idx[i]
+            self.tableWidget.setSpan(m_idx[0]-1, m_idx[2]-1, m_idx[1]-m_idx[0]+1, m_idx[3]-m_idx[2]+1)
+            self.merge_position.append([m_idx[0]-1,m_idx[1]])
+
+        #======合并单元格=======
+
+        #======单元格大小=======
+        for i in range(1,num_row+1):
+            h = ws.row_dimensions[i].height
+            if h is not None:
+                self.tableWidget.setRowHeight(i-1,h)
+        # for i in range(1,num_column+1):
+        #     w = ws.column_dimensions[get_column_letter(i)].width
+        #     if w is not None:
+        #         self.tableWidget.setColumnWidth(i-1,w)
+        #======单元格大小=======
+
+        self.comboBox_r2.clear()
+        for i in range(1,num_row+1):
+            self.comboBox_r2.addItem(str(num_row-i+1))
+            row_sizes = []
+            for j in range(1,num_column+1):
+                cell = ws.cell(row=i, column=j)
+                if cell.value is not None:
+                    item = QTableWidgetItem(str(cell.value))
+                    assign_style_qt(item,cell)
+                else:
+                    item = QTableWidgetItem()
+                self.tableWidget.setItem(i-1, j-1, item)
+
+        # self.tableWidget.resizeColumnsToContents()
+        # self.tableWidget.resizeRowsToContents()
+        wb.close()
 
     def SplitProcess(self):
-        x = self.comboBoxfiletypeX.currentIndex()
-        y = self.comboBoxfiletypeY.currentIndex()
-        print(x,y)
-        if x == 0 or y == 0:
-            QMessageBox.about(self, "关于对话框", '请先选择拆分关键词位置')
-        if x == -1 or y == -1:
-            QMessageBox.about(self, "关于对话框", '请先选择文件并load文件')
+        if not self.flag_confirm:
+            QMessageBox.about(self, "hi,兰神", '请先选择文件并load文件,并选择拆分关键词')
         else:
-            items = self.listWidget.selectedItems()
-            xlsfiles = []
-            for i in list(items):
-                xlsfiles.append(i.text())
             try:
-                self.splitThread = splitThread(idx = [x,y],files = xlsfiles)
+                self.splitThread = splitThread(self.infos)
                 self.splitThread.split_signal.connect(self.set_progressbar_value)
                 self.splitThread.split_signal_lcd.connect(self.set_lcdnumber_value)
                 self.splitThread.start()
             except:
-                QMessageBox.about(self, "关于对话框", '拆分{}出现错误'.format(base_name))
+                QMessageBox.about(self, "hi,兰神", '拆分{}出现错误'.format(base_name))
+        self.flag_confirm = False
     def mergeProcess(self):
-        QMessageBox.about(self, "关于对话框", '此功能为付费功能')
+        QMessageBox.about(self, "hi,兰神", '此功能为付费功能')
     def analyseProcess(self):
-        QMessageBox.about(self, "关于对话框", '此功能为付费功能')
+        QMessageBox.about(self, "hi,兰神", '此功能为付费功能')
     def makaloProcess(self):
         QMessageBox.question(self, "提问对话框", "感谢一下makalo吧？", QMessageBox.Yes | QMessageBox.No)
 

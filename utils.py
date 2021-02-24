@@ -3,19 +3,32 @@ import os
 import copy
 import math
 from openpyxl.utils import get_column_letter, column_index_from_string
-def get_key(wb,idx):
-    sheet_names = wb.sheetnames
+from PyQt5.QtGui import QFont
+from PyQt5.QtCore import Qt
+def get_key(wb,valid_sheets,base_info):
+    sheet_names = valid_sheets
+    # print(sheet_names)
     dict_idx = {}
     keys = []
     for name_s in sheet_names:
         ws = wb[name_s]
-        x,y = idx
-        num_row = ws.max_row #最大行数
-        num_column = ws.max_column #最大列数
-        for i in range(x+1,num_row+1):
-            k = ws.cell(row=i, column=y).value
+        idx,rg = base_info[name_s]
+        _,y = idx
+        num_row = ws.max_row
+        num_column = ws.max_column
+
+        merge_idx = ws.merged_cells
+        merge_idx = get_merge_cell_list(merge_idx)
+
+        for i in range(int(rg[0]),int(rg[1])+1):
+            k = ws.cell(row=i, column=int(y)).value
+            # print(k)
             if k is None:
-                k = keys[-1]
+                for m_idx in merge_idx:
+                    if i >= m_idx[0] and i<= m_idx[1]:
+                        k = keys[-1]
+                    else:
+                        continue
             keys.append(k)
             if not k in dict_idx.keys():
                 dict_idx[k] = {name_s:[i]}
@@ -25,6 +38,8 @@ def get_key(wb,idx):
                 l = dict_idx[k][name_s]
                 l.append(i)
                 dict_idx[k][name_s] = l
+        # import sys
+        # sys.exit()
     return dict_idx
 
 def get_merge_cell_list(merge_idx):
@@ -47,6 +62,13 @@ def get_merge_map(merge_idx,idx):
     except:
         return None
 
+def idx2letter(idx):
+    x,y = idx
+    y = get_column_letter(y)
+    s = '{}{}'.format(y,x)
+    return s
+
+
 def set_style(ws):
     align = styles.Alignment(horizontal='center',vertical='center')
     font_18 = styles.Font(size=18)
@@ -58,7 +80,7 @@ def set_style(ws):
             cell = ws.cell(row=i, column=j)
             cell.alignment = align
             cell.font = font_18
-def assign_value(target_cell,source_cell):
+def assign_style(target_cell,source_cell):
     target_cell.fill = copy.copy(source_cell.fill)
     if source_cell.has_style:
         target_cell._style = copy.copy(source_cell._style)
@@ -68,6 +90,40 @@ def assign_value(target_cell,source_cell):
         target_cell.number_format = copy.copy(source_cell.number_format)
         target_cell.protection = copy.copy(source_cell.protection)
         target_cell.alignment = copy.copy(source_cell.alignment)
+
+def color(value):
+    digit = list(map(str, range(10))) + list("ABCDEF")
+    if isinstance(value, tuple):
+        string = '#'
+        for i in value:
+            a1 = i // 16
+            a2 = i % 16
+            string += digit[a1] + digit[a2]
+        return string
+    elif isinstance(value, str):
+        a1 = digit.index(value[1]) * 16 + digit.index(value[2])
+        a2 = digit.index(value[3]) * 16 + digit.index(value[4])
+        a3 = digit.index(value[5]) * 16 + digit.index(value[6])
+        return (a1, a2, a3)
+    else:
+        return (0, 0, 0)
+def assign_style_qt(target_cell,source_cell):
+    #字体，大小，颜色，加粗
+    font = QFont()   #实例化字体对象
+    font.setFamily(source_cell.font.name)  #字体
+    font.setBold(source_cell.font.bold)  #加粗
+    font.setPointSize(source_cell.font.size)   #字体大小
+    target_cell.setFont(font)
+    #居中
+    target_cell.setTextAlignment(Qt.AlignCenter | Qt.AlignCenter)
+    #背景
+    # print(source_cell.fill.bgColor.rgb)
+    # target_cell.setBackground(QtGui.QColor(100,100,150))
+
+
+
+
+
 
 
 
