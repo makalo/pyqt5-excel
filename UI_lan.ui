@@ -24,7 +24,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="tab">
      <attribute name="title">
@@ -158,16 +158,6 @@
         <string>load</string>
        </property>
       </widget>
-      <widget class="QComboBox" name="comboBoxfiletypeX">
-       <property name="geometry">
-        <rect>
-         <x>60</x>
-         <y>230</y>
-         <width>101</width>
-         <height>26</height>
-        </rect>
-       </property>
-      </widget>
       <widget class="QPushButton" name="pushButtonsplit">
        <property name="geometry">
         <rect>
@@ -194,23 +184,10 @@
         <string>merge</string>
        </property>
       </widget>
-      <widget class="QLabel" name="labelx">
-       <property name="geometry">
-        <rect>
-         <x>20</x>
-         <y>229</y>
-         <width>31</width>
-         <height>31</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string> X </string>
-       </property>
-      </widget>
       <widget class="QComboBox" name="comboBoxfiletype">
        <property name="geometry">
         <rect>
-         <x>360</x>
+         <x>30</x>
          <y>230</y>
          <width>101</width>
          <height>26</height>
@@ -241,29 +218,6 @@
        </property>
        <property name="text">
         <string>makalo</string>
-       </property>
-      </widget>
-      <widget class="QComboBox" name="comboBoxfiletypeY">
-       <property name="geometry">
-        <rect>
-         <x>220</x>
-         <y>231</y>
-         <width>101</width>
-         <height>26</height>
-        </rect>
-       </property>
-      </widget>
-      <widget class="QLabel" name="labely">
-       <property name="geometry">
-        <rect>
-         <x>180</x>
-         <y>230</y>
-         <width>31</width>
-         <height>31</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string> Y </string>
        </property>
       </widget>
      </widget>
@@ -333,7 +287,7 @@
         </rect>
        </property>
        <property name="text">
-        <string>workbookes</string>
+        <string>books</string>
        </property>
       </widget>
       <widget class="QComboBox" name="comboBox_wb">
@@ -359,20 +313,20 @@
       <widget class="QLabel" name="label_keyidx">
        <property name="geometry">
         <rect>
-         <x>730</x>
+         <x>720</x>
          <y>20</y>
          <width>51</width>
          <height>21</height>
         </rect>
        </property>
        <property name="text">
-        <string>keyidx</string>
+        <string>idx</string>
        </property>
       </widget>
       <widget class="QLabel" name="label_range">
        <property name="geometry">
         <rect>
-         <x>730</x>
+         <x>720</x>
          <y>50</y>
          <width>51</width>
          <height>21</height>
