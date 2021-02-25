@@ -1,4 +1,5 @@
 PyQt5
 pyqtchart
+qdarkstyle
 openpyxl
 pyinstaller

@@ -13,6 +13,7 @@ from ToolsPackage import splitThread
 from openpyxl import load_workbook
 from utils import get_column_letter,assign_style_qt,get_merge_cell_list
 import webbrowser
+import qdarkstyle
 class Stream(QObject):
     """Redirects console output to text widget."""
     newText = pyqtSignal(str)
@@ -31,8 +32,9 @@ class anaxcelhandler(QtWidgets.QMainWindow, UI_lan.Ui_MainWindow):
         else:
             self.bundle_dir = os.path.dirname(os.path.abspath(__file__))
         self.setupUi(self)
-        self.setWindowIcon(QtGui.QIcon(self.bundle_dir + '/icons/icon.png'))
-        self.setStyleSheet(open("Dark/darkstyle.qss", "r").read())
+        #self.setWindowIcon(QtGui.QIcon(self.bundle_dir + '/icons/icon.png'))
+        #self.setStyleSheet(open("Dark/darkstyle.qss", "r").read())
+        # self.setStyleSheet(open("qss/1.qss", "r").read())
 
         self.listWidget.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
         self.pushButtonbrowse.clicked.connect(self.openFileNamesDialog)
@@ -316,6 +318,8 @@ class anaxcelhandler(QtWidgets.QMainWindow, UI_lan.Ui_MainWindow):
 
 app = QtWidgets.QApplication(sys.argv)
 window = anaxcelhandler()
+# setup stylesheet
+app.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
 window.show()
 sys.exit(app.exec_())
 
