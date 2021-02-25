@@ -304,7 +304,7 @@ class anaxcelhandler(QtWidgets.QMainWindow, UI_lan.Ui_MainWindow):
     def analyseProcess(self):
         QMessageBox.about(self, "hi,兰神", '此功能为付费功能')
     def makaloProcess(self):
-        QMessageBox.question(self, "提问对话框", "感谢一下makalo吧？", QMessageBox.Yes | QMessageBox.No)
+        webbrowser.open('https://blog.csdn.net/guicai1647855685?spm=1010.2135.3001.5421')
     def linkProcess(self):
         webbrowser.open('https://github.com/makalo')
     def set_progressbar_value(self, value):
