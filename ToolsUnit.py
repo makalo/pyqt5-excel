@@ -37,8 +37,8 @@ def split_excel(path,base_info,signal = None):
             num_column = ws.max_column
 
             _,rg = base_info[sheet]
-            head_idx = list(range(1,int(rg[0])))
-            tail_idx = list(range(int(rg[1])+1,num_row+1))
+            head_idx = list(range(1,rg[0]))
+            tail_idx = list(range(num_row+1 if rg[1] == 'last' else rg[1]+1,num_row+1))
 
             # ws_rows = list(ws.values)
             ws_tmp = wb_tmp.create_sheet(sheet)
@@ -70,26 +70,35 @@ def split_excel(path,base_info,signal = None):
                     assign_style(cell_tmp,cell)
             # set_style(ws_tmp)
         for sheet in invalid_sheets:
+            ws = wb[sheet]
+            num_row = ws.max_row
+            num_column = ws.max_column
             ws_tmp = wb_tmp.create_sheet(sheet)
-            ws_tmp = copy.copy(wb[sheet])
+            rows = ws.values
+            for row in rows:
+                ws_tmp.append(row)
+
+
         wbs_split.append(wb_tmp)
         names_split.append(k)
         count += 1
         if signal is not None:
             proess = count / num_keys * 100
             signal.emit(int(proess))
+        wb.close()
     return wbs_split,names_split
 
 
 if __name__ == "__main__":
-    # base_info = {'省级产业集聚区地下水污染防治有关工作开展情况调度表':[['2','2'],['3','182']],
+    # base_info = {'省级产业集聚区地下水污染防治有关工作开展情况调度表':[[2,2],[3,'last']],
     #             '以化工等行业为主的产业集聚区':[]}
-    base_info = {'其他':[['',''],['',10]],'数据字典':[['',''],['',10]],'Sheet1':[[3,2],[4,28]]}
+    base_info = {'其他':[],'数据字典':[],'Sheet1':[[3,2],[4,33]]}
     wbs_split,names_split = split_excel('20210223.xlsx',base_info)
     root = './debug'
     if not os.path.exists(root):
         os.makedirs(root)
     for wb,name in zip(wbs_split,names_split):
+        print(name)
         path = os.path.join(root,name+'.xlsx')
         wb.save(path)
 

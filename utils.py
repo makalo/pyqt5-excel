@@ -20,15 +20,17 @@ def get_key(wb,valid_sheets,base_info):
         merge_idx = ws.merged_cells
         merge_idx = get_merge_cell_list(merge_idx)
 
-        for i in range(int(rg[0]),int(rg[1])+1):
-            k = ws.cell(row=i, column=int(y)).value
-            # print(k)
+        for i in range(rg[0],num_row+1 if rg[1] == 'last' else rg[1]+1):
+            k = ws.cell(row=i, column=y).value
             if k is None:
                 for m_idx in merge_idx:
-                    if i >= m_idx[0] and i<= m_idx[1]:
+                    if y == m_idx[1] and i >= m_idx[0] and i<= m_idx[2]:
                         k = keys[-1]
+                        break
                     else:
                         continue
+                if k is None:
+                    continue
             keys.append(k)
             if not k in dict_idx.keys():
                 dict_idx[k] = {name_s:[i]}
@@ -38,8 +40,6 @@ def get_key(wb,valid_sheets,base_info):
                 l = dict_idx[k][name_s]
                 l.append(i)
                 dict_idx[k][name_s] = l
-        # import sys
-        # sys.exit()
     return dict_idx
 
 def get_merge_cell_list(merge_idx):
@@ -48,10 +48,11 @@ def get_merge_cell_list(merge_idx):
     for i in range(len(merge_idx)):
         merge = merge_idx[i]
         row_min, row_max, col_min, col_max = merge.min_row, merge.max_row, merge.min_col, merge.max_col
-        merge_list.append([row_min, row_max, col_min, col_max])
+        # merge_list.append([row_min, row_max, col_min, col_max])
+        merge_list.append([row_min, col_min, row_max, col_max])
     return merge_list
 def get_merge_map(merge_idx,idx):
-    row_min, row_max, col_min, col_max = merge_idx
+    row_min, col_min,row_max , col_max = merge_idx
     col_min = get_column_letter(col_min)
     col_max = get_column_letter(col_max)
     try:

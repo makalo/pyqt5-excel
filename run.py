@@ -12,7 +12,7 @@ import UI_lan
 from ToolsPackage import splitThread
 from openpyxl import load_workbook
 from utils import get_column_letter,assign_style_qt,get_merge_cell_list
-
+import webbrowser
 class Stream(QObject):
     """Redirects console output to text widget."""
     newText = pyqtSignal(str)
@@ -43,6 +43,7 @@ class anaxcelhandler(QtWidgets.QMainWindow, UI_lan.Ui_MainWindow):
         self.pushButtonmerge.clicked.connect(self.mergeProcess)
         self.pushButtonanalyse.clicked.connect(self.analyseProcess)
         self.pushButtonmakalo.clicked.connect(self.makaloProcess)
+        self.pushButton_link.clicked.connect(self.linkProcess)
 
         self.statusbar.showMessage('兰神专属')
         self.comboBoxfiletype.addItems(['xlsx','xls'])
@@ -123,7 +124,6 @@ class anaxcelhandler(QtWidgets.QMainWindow, UI_lan.Ui_MainWindow):
         self.comboBox_r1.clear()
         self.comboBox_r2.clear()
     def confirm_idx(self):
-
         x = self.comboBox_x.itemText(self.comboBox_x.currentIndex())
         y = self.comboBox_y.itemText(self.comboBox_y.currentIndex())
 
@@ -136,9 +136,31 @@ class anaxcelhandler(QtWidgets.QMainWindow, UI_lan.Ui_MainWindow):
         if wb == '' or ws == '':
             QMessageBox.about(self, "hi,兰神", '先load文件')
         else:
-            key_idx = [x,y]
-            rg = [r1,r2]
-            self.infos[wb]['sheet_names'][ws] = [key_idx,rg]
+            x = int(x) if x != '' else x
+            y = int(y) if y != '' else y
+            r1 = int(r1) if r1 != '' else r1
+            r2 = int(r2) if r2 != '' else r2
+
+            if self.checkBox_book.isChecked():
+                print('book')
+                key_idx = [x,y]
+                rg = [r1,'last']
+                for wb_k in self.infos.keys():
+                    ws_keys = self.infos[wb_k]['sheet_names']
+                    for ws_k in ws_keys.keys():
+                        self.infos[wb_k]['sheet_names'][ws_k] = [key_idx,rg]
+            elif self.checkBox_sheet.isChecked():
+                print('sheet')
+                key_idx = [x,y]
+                rg = [r1,'last']
+                ws_keys = self.infos[wb]['sheet_names']
+                for ws_k in ws_keys.keys():
+                    self.infos[wb]['sheet_names'][ws_k] = [key_idx,rg]
+            else:
+                print('cell')
+                key_idx = [x,y]
+                rg = [r1,r2]
+                self.infos[wb]['sheet_names'][ws] = [key_idx,rg]
             self.flag_confirm = True
 
 
@@ -168,10 +190,8 @@ class anaxcelhandler(QtWidgets.QMainWindow, UI_lan.Ui_MainWindow):
                     sheets_dict = {}
                     for s in sheet_names:
                         sheets_dict[s] = []
-
                     self.infos[name] = {'path':file_path,'sheet_names':sheets_dict}
                     wb.close()
-
                 for k in self.infos.keys():
                     self.comboBox_wb.addItem(k)
                 k = self.comboBox_wb.itemText(0)
@@ -205,17 +225,17 @@ class anaxcelhandler(QtWidgets.QMainWindow, UI_lan.Ui_MainWindow):
         self.comboBox_x.clear()
         self.comboBox_y.clear()
         self.comboBox_r1.clear()
-        row = item.row()
+        row = item.row()+1
+        column = item.column()+1
         #=======对合并的单元格取idx
         for p in self.merge_position:
-            if row == p[0]:
-                row = row + (p[1]-p[0])
+            if row == p[0] and column == p[1]:
+                row = row + (p[2]-p[0])
                 break
         #=======对合并的单元格取idx
-        self.comboBox_x.addItem(str(row+1))
-        self.comboBox_y.addItem(str(item.column()+1))
-
-        self.comboBox_r1.addItem(str(row+2))
+        self.comboBox_x.addItem(str(row))
+        self.comboBox_y.addItem(str(column))
+        self.comboBox_r1.addItem(str(row+1))
 
 
     def show_excel(self):
@@ -235,9 +255,8 @@ class anaxcelhandler(QtWidgets.QMainWindow, UI_lan.Ui_MainWindow):
 
         for i in range(len(merge_idx)):
             m_idx = merge_idx[i]
-            self.tableWidget.setSpan(m_idx[0]-1, m_idx[2]-1, m_idx[1]-m_idx[0]+1, m_idx[3]-m_idx[2]+1)
-            self.merge_position.append([m_idx[0]-1,m_idx[1]])
-
+            self.tableWidget.setSpan(m_idx[0]-1, m_idx[1]-1, m_idx[2]-m_idx[0]+1, m_idx[3]-m_idx[1]+1)
+            self.merge_position.append([m_idx[0],m_idx[1],m_idx[2]])#[x1,y1,range]
         #======合并单元格=======
 
         #======单元格大小=======
@@ -286,7 +305,8 @@ class anaxcelhandler(QtWidgets.QMainWindow, UI_lan.Ui_MainWindow):
         QMessageBox.about(self, "hi,兰神", '此功能为付费功能')
     def makaloProcess(self):
         QMessageBox.question(self, "提问对话框", "感谢一下makalo吧？", QMessageBox.Yes | QMessageBox.No)
-
+    def linkProcess(self):
+        webbrowser.open('https://github.com/makalo')
     def set_progressbar_value(self, value):
         self.progressBar.setValue(value)
     def set_lcdnumber_value(self,value):
