@@ -64,6 +64,10 @@ class anaxcelhandler(QtWidgets.QMainWindow, UI_lan.Ui_MainWindow):
         self.pushButton_confirm_idx.clicked.connect(self.confirm_idx)
         #==========show====
 
+        #==========context===
+        self.infos = {}
+        self.infos_bak = {}
+
     def use_palette(self):
         self.setWindowTitle("设置背景图片")
         window_pale = QtGui.QPalette()
@@ -125,7 +129,18 @@ class anaxcelhandler(QtWidgets.QMainWindow, UI_lan.Ui_MainWindow):
         self.comboBox_y.clear()
         self.comboBox_r1.clear()
         self.comboBox_r2.clear()
+    def assign_dict(self,dict1,dict2):
+        for k,v in dict1.items():
+            if isinstance(v,dict):
+                dict_tmp = dict()
+                dict2[k] = self.assign_dict(v,dict_tmp)
+            else:
+                dict2[k] = v
+        return dict2
+
     def confirm_idx(self):
+        self.infos_bak = self.assign_dict(self.infos,self.infos_bak)
+
         x = self.comboBox_x.itemText(self.comboBox_x.currentIndex())
         y = self.comboBox_y.itemText(self.comboBox_y.currentIndex())
 
@@ -147,22 +162,22 @@ class anaxcelhandler(QtWidgets.QMainWindow, UI_lan.Ui_MainWindow):
                 print('book')
                 key_idx = [x,y]
                 rg = [r1,'last']
-                for wb_k in self.infos.keys():
-                    ws_keys = self.infos[wb_k]['sheet_names']
+                for wb_k in self.infos_bak.keys():
+                    ws_keys = self.infos_bak[wb_k]['sheet_names']
                     for ws_k in ws_keys.keys():
-                        self.infos[wb_k]['sheet_names'][ws_k] = [key_idx,rg]
+                        self.infos_bak[wb_k]['sheet_names'][ws_k] = [key_idx,rg]
             elif self.checkBox_sheet.isChecked():
                 print('sheet')
                 key_idx = [x,y]
                 rg = [r1,'last']
-                ws_keys = self.infos[wb]['sheet_names']
+                ws_keys = self.infos_bak[wb]['sheet_names']
                 for ws_k in ws_keys.keys():
-                    self.infos[wb]['sheet_names'][ws_k] = [key_idx,rg]
+                    self.infos_bak[wb]['sheet_names'][ws_k] = [key_idx,rg]
             else:
                 print('cell')
                 key_idx = [x,y]
                 rg = [r1,r2]
-                self.infos[wb]['sheet_names'][ws] = [key_idx,rg]
+                self.infos_bak[wb]['sheet_names'][ws] = [key_idx,rg]
             self.flag_confirm = True
 
 
@@ -215,7 +230,6 @@ class anaxcelhandler(QtWidgets.QMainWindow, UI_lan.Ui_MainWindow):
         self.activate_file[0] = self.infos[wb_k]['path']
         self.activate_file[1] = list(self.infos[wb_k]['sheet_names'].keys())[0]
         self.show_excel()
-
 
     def wsActivated(self,index):
         ws_k = self.comboBox_ws.itemText(index)
@@ -294,6 +308,7 @@ class anaxcelhandler(QtWidgets.QMainWindow, UI_lan.Ui_MainWindow):
             QMessageBox.about(self, "hi,兰神", '请先选择文件并load文件,并选择拆分关键词')
         else:
             try:
+                self.infos = self.assign_dict(self.infos_bak,self.infos)
                 self.splitThread = splitThread(self.infos)
                 self.splitThread.split_signal.connect(self.set_progressbar_value)
                 self.splitThread.split_signal_lcd.connect(self.set_lcdnumber_value)
